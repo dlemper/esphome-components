@@ -1,13 +1,12 @@
 #include "esphome/core/component.h"
-#include "esphome/components/sensor/sensor.h"
 #include "esphome/components/uart/uart.h"
+#include "esphome/components/climate/climate.h"
 
 namespace esphome
 {
   namespace openhr20
   {
-
-    class OpenHR20Component : public Component, public uart::UARTDevice
+    class OpenHR20Component : public Component, public uart::UARTDevice, public climate::Climate
     {
     public:
       OpenHR20Component() = default;
@@ -18,18 +17,9 @@ namespace esphome
       void dump_config() override;
       void loop() override;
 
-      void set_mode_sensor(sensor::Sensor *mode_sensor) { mode_sensor_ = mode_sensor; }
-      void set_window_open_sensor(sensor::Sensor *window_open_sensor) { window_open_sensor_ = window_open_sensor; }
-      void set_locked_sensor(sensor::Sensor *locked_sensor) { locked_sensor_ = locked_sensor; }
-      void set_current_temperature_sensor(sensor::Sensor *current_temperature_sensor) { current_temperature_sensor_ = current_temperature_sensor; }
-      void set_wanted_temperature_sensor(sensor::Sensor *wanted_temperature_sensor) { wanted_temperature_sensor_ = wanted_temperature_sensor; }
-
     protected:
-      sensor::Sensor *mode_sensor_{nullptr};
-      sensor::Sensor *window_open_sensor_{nullptr};
-      sensor::Sensor *locked_sensor_{nullptr};
-      sensor::Sensor *current_temperature_sensor_{nullptr};
-      sensor::Sensor *wanted_temperature_sensor_{nullptr};
+      void control(const ClimateCall &call) override;
+      ClimateTraits traits() override;
 
     private:
       uint8_t data_[101];

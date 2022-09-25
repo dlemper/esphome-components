@@ -51,18 +51,17 @@ void OpenHR20Component::interpretBuffer()
     return;
   }
 
-  this->mode_sensor_->publish_state(this->data_[24]);
+  const auto hr20Mode = this->data_[24];
+  this->mode = hr20Mode == 'A' ? climate::CLIMATE_MODE_AUTO : (hr20Mode == 'M' ? climate::CLIMATE_MODE_HEAT : climate::CLIMATE_MODE_OFF);
 
-  const float current_temperature = (int(this->data_[35]) * 1000 + int(this->data_[36]) * 100 + int(this->data_[37]) * 10 + int(this->data_[38])) / 100;
-  this->current_temperature_sensor_->publish_state(current_temperature);
+  this->current_temperature = (float)(int(this->data_[35]) * 1000 + int(this->data_[36]) * 100 + int(this->data_[37]) * 10 + int(this->data_[38])) / 100;
 
   if (this->data_[43] != 'B') // BOOT
   {
-    const float wanted_temperature = (int(this->data_[43]) * 1000 + int(this->data_[44]) * 100 + int(this->data_[45]) * 10 + int(this->data_[46])) / 100;
-    this->wanted_temperature_sensor_->publish_state(wanted_temperature);
+    this->target_temperature = (float)(int(this->data_[43] - 0x30) * 1000 + int(this->data_[44] - 0x30) * 100 + int(this->data_[45] - 0x30) * 10 + int(this->data_[46] - 0x30)) / 100;
   }
 
-  bool isWindowOpen = false;
+  /*bool isWindowOpen = false;
   bool isLocked = false;
 
   for (uint8_t i = 55; i < this->data_index_; i++)
@@ -81,7 +80,9 @@ void OpenHR20Component::interpretBuffer()
   }
 
   this->window_open_sensor_->publish_state(isWindowOpen);
-  this->locked_sensor_->publish_state(isLocked);
+  this->locked_sensor_->publish_state(isLocked);*/
+
+  this->publish_state();
 }
 
 void OpenHR20Component::dump_config()
@@ -93,4 +94,37 @@ void OpenHR20Component::dump_config()
   LOG_SENSOR("  ", "Current temperature", this->current_temperature_sensor_);
   LOG_SENSOR("  ", "Wanted temperature", this->wanted_temperature_sensor_);
   this->check_uart_settings(9600);
+}
+
+void OpenHR20Component::control(const ClimateCall &call)
+{
+  if (call.get_mode().has_value())
+  {
+    // User requested mode change
+    ClimateMode mode = *call.get_mode();
+    // Send mode to hardware
+    // ...
+
+    // Publish updated state
+    this->mode = mode;
+    this->publish_state();
+  }
+  if (call.get_target_temperature().has_value())
+  {
+    // User requested target temperature change
+    float temp = *call.get_target_temperature();
+    // Send target temp to climate
+    // ...
+  }
+}
+ClimateTraits OpenHR20Component::traits()
+{
+  auto traits = climate::ClimateTraits();
+  traits.set_supports_current_temperature(true);
+  traits.set_supported_modes({climate::CLIMATE_MODE_OFF, climate::CLIMATE_MODE_HEAT, climate::CLIMATE_MODE_AUTO});
+  traits.set_supports_action({climate::CLIMATE_ACTION_OFF, climate::CLIMATE_ACTION_HEATING, climate::CLIMATE_ACTION_IDLE});
+  traits.set_visual_min_temperature(5.0);
+  traits.set_visual_max_temperature(30.5);
+  traits.set_visual_temperature_step(0.5);
+  return traits;
 }
