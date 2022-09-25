@@ -46,10 +46,13 @@ void OpenHR20Component::resetBuffer()
 // detect E?
 void OpenHR20Component::interpretBuffer()
 {
+  this->data_[this->data_index_] = '\0';
+  ESP_LOGD("openhr20", "%s", this->data_);
   if (this->data_[0] != 'D' || this->data_[1] != ':')
   {
     return;
   }
+  ESP_LOGD("openhr20", "got D");
 
   const auto hr20Mode = this->data_[24];
   this->mode = hr20Mode == 'A' ? climate::CLIMATE_MODE_AUTO : (hr20Mode == 'M' ? climate::CLIMATE_MODE_HEAT : climate::CLIMATE_MODE_OFF);
