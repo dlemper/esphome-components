@@ -6,7 +6,7 @@ from esphome.const import CONF_ID
 AUTO_LOAD = ["climate"]
 
 openhr20_ns = cg.esphome_ns.namespace("openhr20")
-OpenHR20Climate = openhr20_ns.class_("OpenHR20Climate", climate.Climate)
+OpenHR20Climate = openhr20_ns.class_("OpenHR20Component", climate.Climate)
 
 CONFIG_SCHEMA = climate_ir.CLIMATE_SCHEMA.extend(
     {
