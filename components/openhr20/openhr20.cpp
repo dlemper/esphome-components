@@ -24,7 +24,7 @@ bool OpenHR20Climate::hasReadLineFromSerial()
   ESP_LOGD(TAG, "OpenHR20Climate::hasReadLineFromSerial");
   while (this->available() != 0)
   {
-    ESP_LOGD(TAG, "idx %d", this->data_index_;
+    ESP_LOGD(TAG, "idx %d", this->data_index_);
     this->read_byte(&this->data_[this->data_index_]);
 
     if (this->data_[this->data_index_] == '\n')
@@ -42,6 +42,7 @@ void OpenHR20Climate::resetBuffer()
 {
   this->data_index_ = 0;
 }
+
 // D: d3 21.09.22 09:18:54 M V: 58 I: 1943 S: 2100 B: 3322 Is: 00000000 Ib: 00 Ic: 00 Ie: 00 E:04 X W L
 // I: temp average
 // S: temp wanted, 5,0 (OFF) - 30,5 (ON) degree, on boot: BOOT
@@ -123,6 +124,7 @@ void OpenHR20Climate::control(const climate::ClimateCall &call)
     // ...
   }
 }
+
 climate::ClimateTraits OpenHR20Climate::traits()
 {
   auto traits = climate::ClimateTraits();
