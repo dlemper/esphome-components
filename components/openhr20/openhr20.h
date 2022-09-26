@@ -24,7 +24,7 @@ namespace esphome
       climate::ClimateTraits traits() override;
 
     private:
-      uint8_t data_[101];
+      uint8_t data_[256];
       uint8_t data_index_{0};
 
       bool hasReadLineFromSerial();

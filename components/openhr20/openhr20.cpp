@@ -24,6 +24,7 @@ bool OpenHR20Climate::hasReadLineFromSerial()
   ESP_LOGD(TAG, "OpenHR20Climate::hasReadLineFromSerial");
   while (this->available() != 0)
   {
+    ESP_LOGD(TAG, "idx %d", this->data_index_;
     this->read_byte(&this->data_[this->data_index_]);
 
     if (this->data_[this->data_index_] == '\n')
