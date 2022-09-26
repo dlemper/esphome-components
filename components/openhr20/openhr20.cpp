@@ -10,7 +10,7 @@ void OpenHR20Climate::setup()
   // nothing to do here
 }
 
-void OpenHR20Climate:loop()
+void OpenHR20Climate::loop()
 {
   if (hasReadLineFromSerial())
   {
