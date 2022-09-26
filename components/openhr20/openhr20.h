@@ -1,6 +1,8 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/climate/climate.h"
+#include "esphome/components/climate/climate_traits.h"
+#include "esphome/components/climate/climate_mode.h"
 
 namespace esphome
 {
