@@ -94,11 +94,7 @@ void OpenHR20Climate::interpretBuffer()
 void OpenHR20Climate::dump_config()
 {
   ESP_LOGCONFIG("openhr20", "OpenHR20:");
-  LOG_SENSOR("  ", "Mode", this->mode);
-  //LOG_SENSOR("  ", "Window open", this->window_open_sensor_);
-  //LOG_SENSOR("  ", "Locked", this->locked_sensor_);
-  LOG_SENSOR("  ", "Current temperature", this->current_temperature);
-  LOG_SENSOR("  ", "Wanted temperature", this->target_temperature);
+  LOG_CLIMATE("  ", "OpenHR20", this);
   this->check_uart_settings(9600);
 }
 
