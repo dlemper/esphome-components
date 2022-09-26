@@ -17,6 +17,7 @@ void OpenHR20Climate::loop()
     this->interpretBuffer();
     this->resetBuffer();
   }
+  ESP_LOGD(TAG, "loop end");
 }
 
 bool OpenHR20Climate::hasReadLineFromSerial()
@@ -34,6 +35,7 @@ bool OpenHR20Climate::hasReadLineFromSerial()
 
     this->data_index_++;
   }
+  ESP_LOGD(TAG, "while end");
 
   return false;
 }
