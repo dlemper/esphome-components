@@ -5,10 +5,12 @@ from esphome.const import CONF_ID
 
 AUTO_LOAD = ["climate"]
 
-openhr20_ns = cg.esphome_ns.namespace("openhr20")
-OpenHR20Climate = openhr20_ns.class_("OpenHR20Component", climate.Climate)
+DEPENDENCIES = ["uart"]
 
-CONFIG_SCHEMA = climate_ir.CLIMATE_SCHEMA.extend(
+openhr20_ns = cg.esphome_ns.namespace("openhr20")
+OpenHR20Climate = openhr20_ns.class_("OpenHR20Component", uart.UARTDevice, component, climate.Climate)
+
+CONFIG_SCHEMA = climate.CLIMATE_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(OpenHR20Climate),
     }
