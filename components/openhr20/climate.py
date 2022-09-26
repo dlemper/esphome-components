@@ -14,7 +14,7 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(OpenHR20Climate),
     }
-).extend(climate.CLIMATE_SCHEMA).extend(cv.COMPONENT_SCHEMA).extend(uart.UART_DEVICE_SCHEMA)
+).extend(climate.CLIMATE_SCHEMA).extend(uart.UART_DEVICE_SCHEMA)
 
 
 async def to_code(config):
