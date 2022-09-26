@@ -124,7 +124,7 @@ climate::ClimateTraits OpenHR20Climate::traits()
   auto traits = climate::ClimateTraits();
   traits.set_supports_current_temperature(true);
   traits.set_supported_modes({climate::CLIMATE_MODE_OFF, climate::CLIMATE_MODE_HEAT, climate::CLIMATE_MODE_AUTO});
-  traits.set_supports_action({climate::CLIMATE_ACTION_OFF, climate::CLIMATE_ACTION_HEATING, climate::CLIMATE_ACTION_IDLE});
+  //traits.set_supports_action({climate::CLIMATE_ACTION_OFF, climate::CLIMATE_ACTION_HEATING, climate::CLIMATE_ACTION_IDLE});
   traits.set_visual_min_temperature(5.0);
   traits.set_visual_max_temperature(30.5);
   traits.set_visual_temperature_step(0.5);
