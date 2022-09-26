@@ -21,6 +21,7 @@ void OpenHR20Climate::loop()
 
 bool OpenHR20Climate::hasReadLineFromSerial()
 {
+  ESP_LOGD(TAG, "OpenHR20Climate::hasReadLineFromSerial");
   while (this->available() != 0)
   {
     this->read_byte(&this->data_[this->data_index_]);
