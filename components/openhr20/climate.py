@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import climate
+from esphome.components import climate, uart
 from esphome.const import CONF_ID
 
 AUTO_LOAD = ["climate"]
@@ -8,7 +8,7 @@ AUTO_LOAD = ["climate"]
 DEPENDENCIES = ["uart"]
 
 openhr20_ns = cg.esphome_ns.namespace("openhr20")
-OpenHR20Climate = openhr20_ns.class_("OpenHR20Climate", climate.Climate, component, uart.UARTDevice)
+OpenHR20Climate = openhr20_ns.class_("OpenHR20Climate", climate.Climate, cg.Component, uart.UARTDevice)
 
 CONFIG_SCHEMA = climate.CLIMATE_SCHEMA.extend(
     {
