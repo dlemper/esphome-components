@@ -1,13 +1,13 @@
 #include "openhr20.h"
 
-float SDS011Component::get_setup_priority() const { return setup_priority::DATA; }
+float OpenHR20Climate::get_setup_priority() const { return setup_priority::DATA; }
 
-void OpenHR20Component::setup()
+void OpenHR20Climate::setup()
 {
   // nothing to do here
 }
 
-void OpenHR20Component::loop()
+void OpenHR20Climate:loop()
 {
   if (hasReadLineFromSerial())
   {
@@ -16,7 +16,7 @@ void OpenHR20Component::loop()
   }
 }
 
-bool OpenHR20Component::hasReadLineFromSerial()
+bool OpenHR20Climate::hasReadLineFromSerial()
 {
   while (this->available() != 0)
   {
@@ -31,7 +31,7 @@ bool OpenHR20Component::hasReadLineFromSerial()
   return false;
 }
 
-void OpenHR20Component::resetBuffer()
+void OpenHR20Climate::resetBuffer()
 {
   this->data_index_ = 0;
 }
@@ -44,7 +44,7 @@ void OpenHR20Component::resetBuffer()
 // detect L
 // detect W
 // detect E?
-void OpenHR20Component::interpretBuffer()
+void OpenHR20Climate::interpretBuffer()
 {
   this->data_[this->data_index_] = '\0';
   ESP_LOGD("openhr20", "%s", this->data_);
@@ -88,7 +88,7 @@ void OpenHR20Component::interpretBuffer()
   this->publish_state();
 }
 
-void OpenHR20Component::dump_config()
+void OpenHR20Climate::dump_config()
 {
   ESP_LOGCONFIG(TAG, "OpenHR20:");
   LOG_SENSOR("  ", "Mode", this->mode_sensor_);
@@ -99,7 +99,7 @@ void OpenHR20Component::dump_config()
   this->check_uart_settings(9600);
 }
 
-void OpenHR20Component::control(const ClimateCall &call)
+void OpenHR20Climate::control(const ClimateCall &call)
 {
   if (call.get_mode().has_value())
   {
@@ -120,7 +120,7 @@ void OpenHR20Component::control(const ClimateCall &call)
     // ...
   }
 }
-ClimateTraits OpenHR20Component::traits()
+ClimateTraits OpenHR20Climate::traits()
 {
   auto traits = climate::ClimateTraits();
   traits.set_supports_current_temperature(true);

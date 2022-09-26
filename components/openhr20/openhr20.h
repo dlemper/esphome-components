@@ -6,10 +6,10 @@ namespace esphome
 {
   namespace openhr20
   {
-    class OpenHR20Component : public Component, public uart::UARTDevice, public climate::Climate
+    class OpenHR20Climate : public climate::Climate, public Component, public uart::UARTDevice
     {
     public:
-      OpenHR20Component() = default;
+      OpenHR20Climate() = default;
 
       float get_setup_priority() const override;
 
