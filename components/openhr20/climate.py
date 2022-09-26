@@ -8,15 +8,16 @@ AUTO_LOAD = ["climate"]
 DEPENDENCIES = ["uart"]
 
 openhr20_ns = cg.esphome_ns.namespace("openhr20")
-OpenHR20Climate = openhr20_ns.class_("OpenHR20Component", uart.UARTDevice, component, climate.Climate)
+OpenHR20Component = openhr20_ns.class_("OpenHR20Component", uart.UARTDevice, component, climate.Climate)
 
 CONFIG_SCHEMA = climate.CLIMATE_SCHEMA.extend(
     {
-        cv.GenerateID(): cv.declare_id(OpenHR20Climate),
+        cv.GenerateID(): cv.declare_id(OpenHR20Component),
     }
 )
 
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
+    await cg.register_component(var, config)
     await climate.register_climate(var, config)
