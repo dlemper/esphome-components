@@ -1,5 +1,8 @@
 #include "openhr20.h"
 
+namespace esphome {
+namespace openhr20 {
+
 float OpenHR20Climate::get_setup_priority() const { return setup_priority::DATA; }
 
 void OpenHR20Climate::setup()
@@ -131,3 +134,6 @@ climate::ClimateTraits OpenHR20Climate::traits()
   traits.set_visual_temperature_step(0.5);
   return traits;
 }
+
+} // namespace openhr20
+} // namespace esphome
