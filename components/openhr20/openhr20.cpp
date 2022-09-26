@@ -29,6 +29,8 @@ bool OpenHR20Climate::hasReadLineFromSerial()
     {
       return true;
     }
+
+    this->data_index_++;
   }
 
   return false;
@@ -49,13 +51,13 @@ void OpenHR20Climate::resetBuffer()
 // detect E?
 void OpenHR20Climate::interpretBuffer()
 {
-  this->data_[this->data_index_] = '\0';
-  ESP_LOGD("openhr20", "%s", this->data_);
+  ESP_LOGD(TAG, "OpenHR20Climate::interpretBuffer");
   if (this->data_[0] != 'D' || this->data_[1] != ':')
   {
     return;
   }
-  ESP_LOGD("openhr20", "got D");
+  this->data_[this->data_index_] = '\0';
+  ESP_LOGD(TAG, "%s", this->data_);
 
   const auto hr20Mode = this->data_[24];
   this->mode = hr20Mode == 'A' ? climate::CLIMATE_MODE_AUTO : (hr20Mode == 'M' ? climate::CLIMATE_MODE_HEAT : climate::CLIMATE_MODE_OFF);
@@ -93,7 +95,7 @@ void OpenHR20Climate::interpretBuffer()
 
 void OpenHR20Climate::dump_config()
 {
-  ESP_LOGCONFIG("openhr20", "OpenHR20:");
+  ESP_LOGCONFIG(TAG, "OpenHR20:");
   LOG_CLIMATE("  ", "OpenHR20", this);
   this->check_uart_settings(9600);
 }
