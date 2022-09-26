@@ -26,6 +26,7 @@ namespace esphome
       uint8_t data_index_{0};
 
       bool hasReadLineFromSerial();
+      void OpenHR20Climate::interpretBuffer()
       void resetBuffer();
     };
   }
