@@ -6,6 +6,8 @@ namespace esphome
 {
   namespace openhr20
   {
+    static const char *TAG = "openhr20";
+
     class OpenHR20Climate : public climate::Climate, public Component, public uart::UARTDevice
     {
     public:
