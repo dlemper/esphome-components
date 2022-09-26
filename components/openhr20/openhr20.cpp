@@ -99,12 +99,12 @@ void OpenHR20Climate::dump_config()
   this->check_uart_settings(9600);
 }
 
-void OpenHR20Climate::control(const ClimateCall &call)
+void OpenHR20Climate::control(const climate::ClimateCall &call)
 {
   if (call.get_mode().has_value())
   {
     // User requested mode change
-    ClimateMode mode = *call.get_mode();
+    climate::ClimateMode mode = *call.get_mode();
     // Send mode to hardware
     // ...
 
@@ -120,7 +120,7 @@ void OpenHR20Climate::control(const ClimateCall &call)
     // ...
   }
 }
-ClimateTraits OpenHR20Climate::traits()
+climate::ClimateTraits OpenHR20Climate::traits()
 {
   auto traits = climate::ClimateTraits();
   traits.set_supports_current_temperature(true);

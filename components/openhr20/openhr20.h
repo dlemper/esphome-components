@@ -1,8 +1,6 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/climate/climate.h"
-#include "esphome/components/climate/climate_traits.h"
-#include "esphome/components/climate/climate_mode.h"
 
 namespace esphome
 {
@@ -20,8 +18,8 @@ namespace esphome
       void loop() override;
 
     protected:
-      void control(const ClimateCall &call) override;
-      ClimateTraits traits() override;
+      void control(const climate::ClimateCall &call) override;
+      climate::ClimateTraits traits() override;
 
     private:
       uint8_t data_[101];
