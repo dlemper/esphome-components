@@ -14,8 +14,8 @@ void OpenHR20Climate::loop()
 {
   if (hasReadLineFromSerial())
   {
-    interpretBuffer();
-    resetBuffer();
+    this->interpretBuffer();
+    this->resetBuffer();
   }
 }
 
