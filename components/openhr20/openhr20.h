@@ -8,11 +8,9 @@ namespace esphome
   {
     static const char *TAG = "openhr20";
 
-    class OpenHR20Climate : public climate::Climate, public Component, public uart::UARTDevice
+    class OpenHR20Climate : public climate::Climate, public uart::UARTDevice, public Component
     {
     public:
-      OpenHR20Climate() = default;
-
       float get_setup_priority() const override;
 
       void setup() override;
@@ -30,6 +28,7 @@ namespace esphome
       bool hasReadLineFromSerial();
       void interpretBuffer();
       void resetBuffer();
+      float decodeXXXX(uint8_t data[]);
     };
   }
 }

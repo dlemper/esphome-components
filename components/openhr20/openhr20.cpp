@@ -17,15 +17,12 @@ void OpenHR20Climate::loop()
     this->interpretBuffer();
     this->resetBuffer();
   }
-  ESP_LOGD(TAG, "loop end");
 }
 
 bool OpenHR20Climate::hasReadLineFromSerial()
 {
-  ESP_LOGD(TAG, "OpenHR20Climate::hasReadLineFromSerial");
   while (this->available())
   {
-    ESP_LOGD(TAG, "idx %d", this->data_index_);
     this->read_byte(&this->data_[this->data_index_]);
 
     if (this->data_[this->data_index_] == '\n')
@@ -35,7 +32,6 @@ bool OpenHR20Climate::hasReadLineFromSerial()
 
     this->data_index_++;
   }
-  ESP_LOGD(TAG, "while end");
 
   return false;
 }
@@ -43,6 +39,11 @@ bool OpenHR20Climate::hasReadLineFromSerial()
 void OpenHR20Climate::resetBuffer()
 {
   this->data_index_ = 0;
+}
+
+float OpenHR20Climate::decodeXXXX(uint8_t *data)
+{
+  return (float)(int(data[0] - 0x30) * 1000 + int(data[1] - 0x30) * 100 + int(data[2] - 0x30) * 10 + int(data[3] - 0x30)) / 100;
 }
 
 // D: d3 21.09.22 09:18:54 M V: 58 I: 1943 S: 2100 B: 3322 Is: 00000000 Ib: 00 Ic: 00 Ie: 00 E:04 X W L
@@ -56,22 +57,20 @@ void OpenHR20Climate::resetBuffer()
 // detect E?
 void OpenHR20Climate::interpretBuffer()
 {
-  ESP_LOGD(TAG, "OpenHR20Climate::interpretBuffer");
   if (this->data_[0] != 'D' || this->data_[1] != ':')
   {
     return;
   }
   this->data_[this->data_index_] = '\0';
-  ESP_LOGD(TAG, "%s", this->data_);
 
   const auto hr20Mode = this->data_[24];
   this->mode = hr20Mode == 'A' ? climate::CLIMATE_MODE_AUTO : (hr20Mode == 'M' ? climate::CLIMATE_MODE_HEAT : climate::CLIMATE_MODE_OFF);
 
-  this->current_temperature = (float)(int(this->data_[35]) * 1000 + int(this->data_[36]) * 100 + int(this->data_[37]) * 10 + int(this->data_[38])) / 100;
+  this->current_temperature = decodeXXXX(&this->data_[35]);
 
   if (this->data_[43] != 'B') // BOOT
   {
-    this->target_temperature = (float)(int(this->data_[43] - 0x30) * 1000 + int(this->data_[44] - 0x30) * 100 + int(this->data_[45] - 0x30) * 10 + int(this->data_[46] - 0x30)) / 100;
+    this->target_temperature = decodeXXXX(&this->data_[43]);
   }
 
   /*bool isWindowOpen = false;
@@ -98,6 +97,21 @@ void OpenHR20Climate::interpretBuffer()
   this->publish_state();
 }
 
+/*
+D\n - print status line
+Rab\n - get timer for day a slot b, return cddd=(timermode c time ddd) (hex)
+Wabcddd\n - set timer  for day a slot b timermode c time ddd (hex)
+Yyymmdd\n - set, year yy, month mm, day dd; HEX values!!!
+Hhhmmss\n - set, hour hh, minute mm, second ss; HEX values!!!
+Axx\n - set wanted temperature [unit 0.5C]
+Mxx\n - set mode and close window (00=manu 01=auto fd=nochange/close window only)
+Lxx\n - Lock keys, and return lock status (00=unlock, 01=lock, 02=status only)
+*/
+void OpenHR20Climate::writeCommand(std::string cmd)
+{
+  this->write_array
+}
+
 void OpenHR20Climate::dump_config()
 {
   ESP_LOGCONFIG(TAG, "OpenHR20:");
@@ -112,7 +126,7 @@ void OpenHR20Climate::control(const climate::ClimateCall &call)
     // User requested mode change
     climate::ClimateMode mode = *call.get_mode();
     // Send mode to hardware
-    // ...
+    std::string cmdMode = "M"
 
     // Publish updated state
     this->mode = mode;
