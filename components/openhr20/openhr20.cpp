@@ -3,7 +3,10 @@
 namespace esphome {
 namespace openhr20 {
 
-float OpenHR20Climate::get_setup_priority() const { return setup_priority::DATA; }
+float OpenHR20Climate::get_setup_priority() const
+{
+  return setup_priority::DATA;
+}
 
 void OpenHR20Climate::setup()
 {
@@ -64,7 +67,7 @@ void OpenHR20Climate::interpretBuffer()
   this->data_[this->data_index_] = '\0';
 
   const auto hr20Mode = this->data_[24];
-  this->mode = hr20Mode == 'A' ? climate::CLIMATE_MODE_AUTO : (hr20Mode == 'M' ? climate::CLIMATE_MODE_HEAT : climate::CLIMATE_MODE_OFF);
+  this->mode = hr20Mode == 'A' ? climate::CLIMATE_MODE_AUTO : climate::CLIMATE_MODE_HEAT;
 
   this->current_temperature = decodeXXXX(&this->data_[35]);
 
@@ -107,10 +110,6 @@ Axx\n - set wanted temperature [unit 0.5C]
 Mxx\n - set mode and close window (00=manu 01=auto fd=nochange/close window only)
 Lxx\n - Lock keys, and return lock status (00=unlock, 01=lock, 02=status only)
 */
-void OpenHR20Climate::writeCommand(std::string cmd)
-{
-  this->write_array
-}
 
 void OpenHR20Climate::dump_config()
 {
@@ -126,18 +125,23 @@ void OpenHR20Climate::control(const climate::ClimateCall &call)
     // User requested mode change
     climate::ClimateMode mode = *call.get_mode();
     // Send mode to hardware
-    std::string cmdMode = "M"
+    std::string cmdMode = std::string("M") + (mode == climate::CLIMATE_MODE_HEAT ? "00" : "01") + "\n";
+    this->write_str(cmdMode.c_str());
+    ESP_LOGD(TAG, "sent %s", cmdMode.c_str());
+    this->write_str("D\n");
 
     // Publish updated state
-    this->mode = mode;
-    this->publish_state();
+    //this->mode = mode;
+    //this->publish_state();
   }
   if (call.get_target_temperature().has_value())
   {
     // User requested target temperature change
     float temp = *call.get_target_temperature();
     // Send target temp to climate
-    // ...
+    std::string cmdWanted = "A" + std::to_string(int(temp * 2)) + "\n";
+    this->write_str(cmdWanted.c_str());
+    this->write_str("D\n");
   }
 }
 
@@ -145,7 +149,7 @@ climate::ClimateTraits OpenHR20Climate::traits()
 {
   auto traits = climate::ClimateTraits();
   traits.set_supports_current_temperature(true);
-  traits.set_supported_modes({climate::CLIMATE_MODE_OFF, climate::CLIMATE_MODE_HEAT, climate::CLIMATE_MODE_AUTO});
+  traits.set_supported_modes({/*climate::CLIMATE_MODE_OFF,*/ climate::CLIMATE_MODE_HEAT, climate::CLIMATE_MODE_AUTO});
   //traits.set_supports_action({climate::CLIMATE_ACTION_OFF, climate::CLIMATE_ACTION_HEATING, climate::CLIMATE_ACTION_IDLE});
   traits.set_visual_min_temperature(5.0);
   traits.set_visual_max_temperature(30.5);
