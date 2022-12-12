@@ -30,6 +30,7 @@ bool OpenHR20Climate::hasReadLineFromSerial()
 
     if (this->data_[this->data_index_] == '\n')
     {
+      this->data_[this->data_index_] = '\0';
       return true;
     }
 
@@ -49,6 +50,18 @@ float OpenHR20Climate::decodeXXXX(uint8_t *data)
   return (float)(int(data[0] - 0x30) * 1000 + int(data[1] - 0x30) * 100 + int(data[2] - 0x30) * 10 + int(data[3] - 0x30)) / 100;
 }
 
+std::string OpenHR20Climate::encodeXX(uint8_t i)
+{
+  uint8_t upper = i >> 4;
+  uint8_t lower = i & 0xf;
+
+  std::string out;
+  out = (char)(upper + (upper >= 10 ? 'a' - 10 : '0'));
+  out += (char)(lower + (lower >= 10 ? 'a' - 10 : '0'));
+
+  return out;
+}
+
 // D: d3 21.09.22 09:18:54 M V: 58 I: 1943 S: 2100 B: 3322 Is: 00000000 Ib: 00 Ic: 00 Ie: 00 E:04 X W L
 // I: temp average
 // S: temp wanted, 5,0 (OFF) - 30,5 (ON) degree, on boot: BOOT
@@ -64,8 +77,8 @@ void OpenHR20Climate::interpretBuffer()
   {
     return;
   }
-  this->data_[this->data_index_] = '\0';
 
+  ESP_LOGD(TAG, "got %s\n", this->data_);
   const auto hr20Mode = this->data_[24];
   this->mode = hr20Mode == 'A' ? climate::CLIMATE_MODE_AUTO : climate::CLIMATE_MODE_HEAT;
 
@@ -127,8 +140,10 @@ void OpenHR20Climate::control(const climate::ClimateCall &call)
     // Send mode to hardware
     std::string cmdMode = std::string("M") + (mode == climate::CLIMATE_MODE_HEAT ? "00" : "01") + "\n";
     this->write_str(cmdMode.c_str());
-    ESP_LOGD(TAG, "sent %s", cmdMode.c_str());
-    this->write_str("D\n");
+    ESP_LOGD(TAG, "sent %s\n", cmdMode.c_str());
+    this->hasReadLineFromSerial();
+    //ESP_LOGD(TAG, "got %s", data_);
+    //this->write_str("D\n");
 
     // Publish updated state
     //this->mode = mode;
@@ -139,9 +154,9 @@ void OpenHR20Climate::control(const climate::ClimateCall &call)
     // User requested target temperature change
     float temp = *call.get_target_temperature();
     // Send target temp to climate
-    std::string cmdWanted = "A" + std::to_string(int(temp * 2)) + "\n";
+    std::string cmdWanted = "A" + this->encodeXX(int(temp * 2)) + "\n";
     this->write_str(cmdWanted.c_str());
-    this->write_str("D\n");
+    //this->write_str("D\n");
   }
 }
 

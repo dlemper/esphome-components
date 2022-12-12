@@ -29,6 +29,7 @@ namespace esphome
       void interpretBuffer();
       void resetBuffer();
       float decodeXXXX(uint8_t data[]);
+      std::string encodeXX(uint8_t i);
     };
   }
 }
